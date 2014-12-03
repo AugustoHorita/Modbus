@@ -1,16 +1,16 @@
-CCS PCH C Compiler, Version 5.008, 5967               03-dez-14 15:39
+CCS PCH C Compiler, Version 5.008, 5967               03-dez-14 16:23
 
                Filename:   D:\Projetos\Modbus\rs485.lst
 
                ROM used:   1022 bytes (3%)
                            Largest free fragment is 31746
-               RAM used:   14 (1%) at main() level
+               RAM used:   8 (1%) at main() level
                            42 (3%) worst case
                Stack used: 3 locations
                Stack size: 31
 
 *
-0000:  GOTO   038A
+0000:  GOTO   0396
 .................... /* 
 ....................  * rs485.c 
 ....................  * 
@@ -292,40 +292,40 @@ CCS PCH C Compiler, Version 5.008, 5967               03-dez-14 15:39
 ....................  
 .................... #use delay(clock=10MHz) 
 *
-0316:  CLRF   FEA
-0318:  MOVLW  0E
-031A:  MOVWF  FE9
-031C:  MOVF   FEF,W
-031E:  BZ    033C
-0320:  MOVLW  03
-0322:  MOVWF  01
-0324:  CLRF   00
-0326:  DECFSZ 00,F
-0328:  BRA    0326
-032A:  DECFSZ 01,F
-032C:  BRA    0324
-032E:  MOVLW  3C
-0330:  MOVWF  00
+0322:  CLRF   FEA
+0324:  MOVLW  08
+0326:  MOVWF  FE9
+0328:  MOVF   FEF,W
+032A:  BZ    0348
+032C:  MOVLW  03
+032E:  MOVWF  01
+0330:  CLRF   00
 0332:  DECFSZ 00,F
 0334:  BRA    0332
-0336:  BRA    0338
-0338:  DECFSZ FEF,F
-033A:  BRA    0320
-033C:  GOTO   03E8 (RETURN)
+0336:  DECFSZ 01,F
+0338:  BRA    0330
+033A:  MOVLW  3C
+033C:  MOVWF  00
+033E:  DECFSZ 00,F
+0340:  BRA    033E
+0342:  BRA    0344
+0344:  DECFSZ FEF,F
+0346:  BRA    032C
+0348:  GOTO   03E8 (RETURN)
 .................... #use rs232(xmit=PIN_C6, rcv=PIN_c7, enable=PIN_C5, baud=19200) 
-0340:  BCF    F94.5
-0342:  BSF    F8B.5
-0344:  BTFSS  F9E.4
-0346:  BRA    0344
-0348:  MOVFF  11,FAD
-034C:  NOP   
-034E:  BCF    F94.5
-0350:  BSF    F8B.5
-0352:  BTFSS  FAC.1
-0354:  BRA    0352
-0356:  BCF    F94.5
-0358:  BCF    F8B.5
-035A:  GOTO   037E (RETURN)
+034C:  BCF    F94.5
+034E:  BSF    F8B.5
+0350:  BTFSS  F9E.4
+0352:  BRA    0350
+0354:  MOVFF  0B,FAD
+0358:  NOP   
+035A:  BCF    F94.5
+035C:  BSF    F8B.5
+035E:  BTFSS  FAC.1
+0360:  BRA    035E
+0362:  BCF    F94.5
+0364:  BCF    F8B.5
+0366:  GOTO   038A (RETURN)
 ....................  
 .................... #include "modbus.c" 
 .................... /* 
@@ -349,6 +349,18 @@ CCS PCH C Compiler, Version 5.008, 5967               03-dez-14 15:39
 ....................  
 .................... #define request_size	8 
 ....................  
+.................... typedef struct simple_req_str { 
+.................... 	int addr; 
+.................... 	int cmd; 
+.................... 	long from; 
+.................... 	long to; 
+.................... } s_req_type; 
+....................  
+.................... typedef union simple_req_un { 
+.................... 	s_req_type structure; 
+.................... 	int string[sizeof(s_req_type)]; 
+.................... } s_un_req_type; 
+....................  
 .................... typedef struct req_str { 
 .................... 	int addr; 
 .................... 	int cmd; 
@@ -358,7 +370,7 @@ CCS PCH C Compiler, Version 5.008, 5967               03-dez-14 15:39
 .................... } req_type; 
 ....................  
 .................... typedef union req_un { 
-.................... 	req_type request; 
+.................... 	req_type structure; 
 .................... 	int string[sizeof(req_type)]; 
 .................... } req_un_type; 
 ....................  
@@ -394,72 +406,67 @@ CCS PCH C Compiler, Version 5.008, 5967               03-dez-14 15:39
 ....................  
 .................... long CRC16(int *nData, long wLength) { 
 *
-0212:  SETF   28
-0214:  SETF   27
+0220:  SETF   28
+0222:  SETF   27
 .................... 	int nTemp; 
 .................... 	long wCRCWord = 0xFFFF; 
 ....................  
 .................... 	while (wLength--) { 
-0216:  MOVFF  25,03
-021A:  MOVF   24,W
-021C:  BTFSC  FD8.2
-021E:  DECF   25,F
-0220:  DECF   24,F
-0222:  IORWF  03,W
-0224:  BZ    0270
+0224:  MOVFF  25,03
+0228:  MOVF   24,W
+022A:  BTFSC  FD8.2
+022C:  DECF   25,F
+022E:  DECF   24,F
+0230:  IORWF  03,W
+0232:  BZ    027E
 .................... 		nTemp = *nData++ ^ wCRCWord; 
-0226:  MOVFF  23,03
-022A:  MOVF   22,W
-022C:  INCF   22,F
-022E:  BTFSC  FD8.2
-0230:  INCF   23,F
-0232:  MOVWF  FE9
-0234:  MOVFF  03,FEA
-0238:  MOVF   FEF,W
-023A:  XORWF  27,W
-023C:  MOVWF  26
+0234:  MOVFF  23,03
+0238:  MOVF   22,W
+023A:  INCF   22,F
+023C:  BTFSC  FD8.2
+023E:  INCF   23,F
+0240:  MOVWF  FE9
+0242:  MOVFF  03,FEA
+0246:  MOVF   FEF,W
+0248:  XORWF  27,W
+024A:  MOVWF  26
 .................... 		wCRCWord >>= 8; 
-023E:  MOVFF  28,27
-0242:  CLRF   28
+024C:  MOVFF  28,27
+0250:  CLRF   28
 .................... 		wCRCWord ^= wCRCTable[nTemp]; 
-0244:  CLRF   03
-0246:  MOVFF  26,02
-024A:  BCF    FD8.0
-024C:  RLCF   02,F
-024E:  RLCF   03,F
-0250:  MOVF   02,W
-0252:  MOVFF  FF2,29
-0256:  BCF    FF2.7
-0258:  MOVFF  03,FF7
-025C:  RCALL  0004
-025E:  TBLRD*+
-0260:  MOVFF  FF5,03
-0264:  BTFSC  29.7
-0266:  BSF    FF2.7
-0268:  XORWF  27,F
-026A:  MOVF   03,W
-026C:  XORWF  28,F
-026E:  BRA    0216
+0252:  CLRF   03
+0254:  MOVFF  26,02
+0258:  BCF    FD8.0
+025A:  RLCF   02,F
+025C:  RLCF   03,F
+025E:  MOVF   02,W
+0260:  MOVFF  FF2,29
+0264:  BCF    FF2.7
+0266:  MOVFF  03,FF7
+026A:  RCALL  0004
+026C:  TBLRD*+
+026E:  MOVFF  FF5,03
+0272:  BTFSC  29.7
+0274:  BSF    FF2.7
+0276:  XORWF  27,F
+0278:  MOVF   03,W
+027A:  XORWF  28,F
+027C:  BRA    0224
 .................... 	} 
 ....................  
 .................... 	return wCRCWord; 
-0270:  MOVFF  27,01
-0274:  MOVFF  28,02
-0278:  GOTO   02CE (RETURN)
+027E:  MOVFF  27,01
+0282:  MOVFF  28,02
+0286:  GOTO   02DA (RETURN)
 .................... } 
 ....................  
-.................... long muda(long in) { 
-027C:  MOVF   23,W
-027E:  MOVWF  24
-0280:  MOVFF  22,25
-.................... 	int hi = make8(in, 1); 
-.................... 	int lo = make8(in, 0); 
-....................  
-.................... 	return make16(lo, hi); 
-0284:  MOVFF  25,03
-0288:  MOVFF  24,01
-028C:  MOVFF  25,02
-0290:  RETURN 0
+.................... long troca(long in) { 
+.................... 	return make16(make8(in, 0), make8(in, 1)); 
+*
+0212:  MOVFF  22,03
+0216:  MOVFF  23,01
+021A:  MOVFF  22,02
+021E:  RETURN 0
 .................... } 
 ....................  
 .................... int *make_read_request(int dev_addr, long from, long to) { 
@@ -468,103 +475,108 @@ CCS PCH C Compiler, Version 5.008, 5967               03-dez-14 15:39
 .................... 	long a, b; 
 ....................  
 .................... 	if (from >= to) 
-0292:  MOVF   11,W
-0294:  SUBWF  0F,W
-0296:  BNC   02A8
-0298:  BNZ   02A0
-029A:  MOVF   10,W
-029C:  SUBWF  0E,W
-029E:  BNC   02A8
+*
+028A:  MOVF   0B,W
+028C:  SUBWF  09,W
+028E:  BNC   02A0
+0290:  BNZ   0298
+0292:  MOVF   0A,W
+0294:  SUBWF  08,W
+0296:  BNC   02A0
 .................... 		return -1; 
-02A0:  MOVLW  FF
-02A2:  MOVWF  01
-02A4:  MOVWF  02
-02A6:  BRA    0312
+0298:  MOVLW  FF
+029A:  MOVWF  01
+029C:  MOVWF  02
+029E:  BRA    031E
 ....................  
-.................... 	static int pre_req[6]; 
+.................... 	s_un_req_type pre_request; 
 ....................  
-.................... 	pre_req[0] = dev_addr; 
-02A8:  MOVFF  0D,04
-.................... 	pre_req[1] = read_holding_registers; 
-02AC:  MOVLW  03
-02AE:  MOVWF  05
-.................... 	pre_req[2] = make8(from, 1); 
-02B0:  MOVFF  0F,06
-.................... 	pre_req[3] = make8(from, 0); 
-02B4:  MOVFF  0E,07
-.................... 	pre_req[4] = make8(to, 1); 
-02B8:  MOVFF  11,08
-.................... 	pre_req[5] = make8(to, 0); 
-02BC:  MOVFF  10,09
+.................... 	pre_request.structure.addr = dev_addr; 
+02A0:  MOVFF  07,12
+.................... 	pre_request.structure.cmd = read_holding_registers; 
+02A4:  MOVLW  03
+02A6:  MOVWF  13
+.................... 	pre_request.structure.from = troca(from); 
+02A8:  MOVFF  09,23
+02AC:  MOVFF  08,22
+02B0:  RCALL  0212
+02B2:  MOVFF  02,15
+02B6:  MOVFF  01,14
+.................... 	pre_request.structure.to = troca(to); 
+02BA:  MOVFF  0B,23
+02BE:  MOVFF  0A,22
+02C2:  RCALL  0212
+02C4:  MOVFF  02,17
+02C8:  MOVFF  01,16
 ....................  
-.................... 	long crc = CRC16(pre_req, 6); 
+.................... 	long crc = CRC16(pre_request.string, 6); 
 ....................  
-.................... 	req_un_type req; 
-02C0:  CLRF   23
-02C2:  MOVLW  04
-02C4:  MOVWF  22
-02C6:  CLRF   25
-02C8:  MOVLW  06
-02CA:  MOVWF  24
-02CC:  BRA    0212
-02CE:  MOVFF  02,19
-02D2:  MOVFF  01,18
+.................... 	req_un_type request; 
+02CC:  CLRF   23
+02CE:  MOVLW  12
+02D0:  MOVWF  22
+02D2:  CLRF   25
+02D4:  MOVLW  06
+02D6:  MOVWF  24
+02D8:  BRA    0220
+02DA:  MOVFF  02,19
+02DE:  MOVFF  01,18
 ....................  
-.................... 	req.request.addr = dev_addr; 
-02D6:  MOVFF  0D,1A
-.................... 	req.request.cmd = read_holding_registers; 
-02DA:  MOVLW  03
-02DC:  MOVWF  1B
-.................... 	req.request.from = muda(from); 
-02DE:  MOVFF  0F,23
-02E2:  MOVFF  0E,22
-02E6:  RCALL  027C
-02E8:  MOVFF  02,1D
-02EC:  MOVFF  01,1C
-.................... 	req.request.to = muda(to); 
-02F0:  MOVFF  11,23
-02F4:  MOVFF  10,22
-02F8:  RCALL  027C
-02FA:  MOVFF  02,1F
-02FE:  MOVFF  01,1E
-.................... 	req.request.crc = crc; 
-0302:  MOVFF  19,21
-0306:  MOVFF  18,20
+.................... 	request.structure.addr = dev_addr; 
+02E2:  MOVFF  07,1A
+.................... 	request.structure.cmd = read_holding_registers; 
+02E6:  MOVLW  03
+02E8:  MOVWF  1B
+.................... 	request.structure.from = troca(from); 
+02EA:  MOVFF  09,23
+02EE:  MOVFF  08,22
+02F2:  RCALL  0212
+02F4:  MOVFF  02,1D
+02F8:  MOVFF  01,1C
+.................... 	request.structure.to = troca(to); 
+02FC:  MOVFF  0B,23
+0300:  MOVFF  0A,22
+0304:  RCALL  0212
+0306:  MOVFF  02,1F
+030A:  MOVFF  01,1E
+.................... 	request.structure.crc = crc; 
+030E:  MOVFF  19,21
+0312:  MOVFF  18,20
 ....................  
-.................... 	return req.string; 
-030A:  MOVLW  1A
-030C:  MOVWF  01
-030E:  MOVLW  00
-0310:  MOVWF  02
-0312:  GOTO   03D6 (RETURN)
+.................... 	return request.string; 
+0316:  MOVLW  1A
+0318:  MOVWF  01
+031A:  MOVLW  00
+031C:  MOVWF  02
+031E:  GOTO   03D6 (RETURN)
 .................... } 
 ....................  
 .................... int send_request(int *output) { 
 .................... 	int i; 
 .................... 	for (i = 0; i < request_size; ++i) 
 *
-035E:  CLRF   0F
-0360:  MOVF   0F,W
-0362:  SUBLW  07
-0364:  BNC   0382
+036A:  CLRF   09
+036C:  MOVF   09,W
+036E:  SUBLW  07
+0370:  BNC   038E
 .................... 		putc(output[i]); 
-0366:  CLRF   03
-0368:  MOVF   0F,W
-036A:  ADDWF  0D,W
-036C:  MOVWF  FE9
-036E:  MOVF   0E,W
-0370:  ADDWFC 03,W
-0372:  MOVWF  FEA
-0374:  MOVFF  FEF,10
-0378:  MOVFF  10,11
-037C:  BRA    0340
-037E:  INCF   0F,F
-0380:  BRA    0360
+0372:  CLRF   03
+0374:  MOVF   09,W
+0376:  ADDWF  07,W
+0378:  MOVWF  FE9
+037A:  MOVF   08,W
+037C:  ADDWFC 03,W
+037E:  MOVWF  FEA
+0380:  MOVFF  FEF,0A
+0384:  MOVFF  0A,0B
+0388:  BRA    034C
+038A:  INCF   09,F
+038C:  BRA    036C
 ....................  
 .................... 	return 0; 
-0382:  MOVLW  00
-0384:  MOVWF  01
-0386:  GOTO   03F6 (RETURN)
+038E:  MOVLW  00
+0390:  MOVWF  01
+0392:  GOTO   03F6 (RETURN)
 .................... } 
 ....................  
 ....................  
@@ -573,66 +585,60 @@ CCS PCH C Compiler, Version 5.008, 5967               03-dez-14 15:39
 .................... int *request; 
 ....................  
 .................... int main(void) { 
-038A:  CLRF   FF8
-038C:  BCF    FD0.7
-038E:  BCF    F94.5
-0390:  BCF    F8B.5
-0392:  BSF    FB8.3
-0394:  MOVLW  81
-0396:  MOVWF  FAF
-0398:  MOVLW  00
-039A:  MOVWF  FB0
-039C:  MOVLW  A6
-039E:  MOVWF  FAC
-03A0:  MOVLW  90
-03A2:  MOVWF  FAB
+0396:  CLRF   FF8
+0398:  BCF    FD0.7
+039A:  BCF    F94.5
+039C:  BCF    F8B.5
+039E:  BSF    FB8.3
+03A0:  MOVLW  81
+03A2:  MOVWF  FAF
 03A4:  MOVLW  00
-03A6:  MOVWF  F7E
-03A8:  BCF    FC1.4
-03AA:  BCF    FC1.5
-03AC:  MOVF   F7F,W
-03AE:  ANDLW  E0
-03B0:  MOVWF  F7F
-03B2:  BCF    F79.5
-03B4:  BCF    F79.4
-03B6:  CLRF   F7A
-03B8:  CLRF   F7B
-03BA:  CLRF   04
-03BC:  CLRF   05
-03BE:  CLRF   06
-03C0:  CLRF   07
-03C2:  CLRF   08
-03C4:  CLRF   09
+03A6:  MOVWF  FB0
+03A8:  MOVLW  A6
+03AA:  MOVWF  FAC
+03AC:  MOVLW  90
+03AE:  MOVWF  FAB
+03B0:  MOVLW  00
+03B2:  MOVWF  F7E
+03B4:  BCF    FC1.4
+03B6:  BCF    FC1.5
+03B8:  MOVF   F7F,W
+03BA:  ANDLW  E0
+03BC:  MOVWF  F7F
+03BE:  BCF    F79.5
+03C0:  BCF    F79.4
+03C2:  CLRF   F7A
+03C4:  CLRF   F7B
 ....................  
 .................... 	int i; 
 ....................  
 .................... 	request = make_read_request(1, 0, 10); 
 03C6:  MOVLW  01
-03C8:  MOVWF  0D
-03CA:  CLRF   0F
-03CC:  CLRF   0E
-03CE:  CLRF   11
+03C8:  MOVWF  07
+03CA:  CLRF   09
+03CC:  CLRF   08
+03CE:  CLRF   0B
 03D0:  MOVLW  0A
-03D2:  MOVWF  10
-03D4:  BRA    0292
-03D6:  MOVFF  02,0B
-03DA:  MOVFF  01,0A
+03D2:  MOVWF  0A
+03D4:  BRA    028A
+03D6:  MOVFF  02,05
+03DA:  MOVFF  01,04
 ....................  
 .................... 	while (TRUE) { 
 ....................  
 .................... 		delay_ms(1000); 
 03DE:  MOVLW  04
-03E0:  MOVWF  0D
+03E0:  MOVWF  07
 03E2:  MOVLW  FA
-03E4:  MOVWF  0E
-03E6:  BRA    0316
-03E8:  DECFSZ 0D,F
+03E4:  MOVWF  08
+03E6:  BRA    0322
+03E8:  DECFSZ 07,F
 03EA:  BRA    03E2
 ....................  
 .................... 		send_request(request); 
-03EC:  MOVFF  0B,0E
-03F0:  MOVFF  0A,0D
-03F4:  BRA    035E
+03EC:  MOVFF  05,08
+03F0:  MOVFF  04,07
+03F4:  BRA    036A
 03F6:  BRA    03DE
 .................... 	} 
 ....................  

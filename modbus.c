@@ -19,6 +19,18 @@
 
 #define request_size	8
 
+typedef struct simple_req_str {
+	int addr;
+	int cmd;
+	long from;
+	long to;
+} s_req_type;
+
+typedef union simple_req_un {
+	s_req_type structure;
+	int string[sizeof(s_req_type)];
+} s_un_req_type;
+
 typedef struct req_str {
 	int addr;
 	int cmd;
@@ -28,7 +40,7 @@ typedef struct req_str {
 } req_type;
 
 typedef union req_un {
-	req_type request;
+	req_type structure;
 	int string[sizeof(req_type)];
 } req_un_type;
 
@@ -76,10 +88,7 @@ long CRC16(int *nData, long wLength) {
 }
 
 long troca(long in) {
-	int hi = make8(in, 1);
-	int lo = make8(in, 0);
-
-	return make16(lo, hi);
+	return make16(make8(in, 0), make8(in, 1));
 }
 
 int *make_read_request(int dev_addr, long from, long to) {
@@ -90,26 +99,24 @@ int *make_read_request(int dev_addr, long from, long to) {
 	if (from >= to)
 		return -1;
 
-	static int pre_req[6];
+	s_un_req_type pre_request;
 
-	pre_req[0] = dev_addr;
-	pre_req[1] = read_holding_registers;
-	pre_req[2] = make8(from, 1);
-	pre_req[3] = make8(from, 0);
-	pre_req[4] = make8(to, 1);
-	pre_req[5] = make8(to, 0);
+	pre_request.structure.addr = dev_addr;
+	pre_request.structure.cmd = read_holding_registers;
+	pre_request.structure.from = troca(from);
+	pre_request.structure.to = troca(to);
 
-	long crc = CRC16(pre_req, 6);
+	long crc = CRC16(pre_request.string, 6);
 
-	req_un_type req;
+	req_un_type request;
 
-	req.request.addr = dev_addr;
-	req.request.cmd = read_holding_registers;
-	req.request.from = troca(from);
-	req.request.to = troca(to);
-	req.request.crc = crc;
+	request.structure.addr = dev_addr;
+	request.structure.cmd = read_holding_registers;
+	request.structure.from = troca(from);
+	request.structure.to = troca(to);
+	request.structure.crc = crc;
 
-	return req.string;
+	return request.string;
 }
 
 int send_request(int *output) {
