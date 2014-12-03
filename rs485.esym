@@ -1,7 +1,7 @@
 D G "__PCH__" 0 0 ""5.008""
 D G "__DEVICE__" 0 0 ""
 D G "__DATE__" 0 0 ""03-dez-14""
-D G "__TIME__" 0 0 ""14:25:33"" "* rs485.c"
+D G "__TIME__" 0 0 ""14:43:28"" "* rs485.c"
 c L "set_tris_a" 0 1 1 "*"
 c L "set_tris_a" 0 1 1 "*"
 c L "set_tris_a" 1 1 20 "FUNCTION"
@@ -937,28 +937,26 @@ D G "high" 2 17 "1"
 D G "low" 2 18 "0"
 D G "request_size" 2 20 "8"
 T G "req_type" 2 28 "{int8 addr,int8 cmd,int16 from,int16 to,int16 crc}" `645 
-V L "nData" 2 30 "*int8" `647 
-V L "wLength" 2 30 "int16" `648 
-F G "CRC16" 2 30 "int16(*int8 nData,int16 wLength)" `646 
-V L "wCRCTable" 2 31 "int16[1]" `649 
-V L "nTemp" 2 65 "int8" `650 
-V L "wCRCWord" 2 66 "int16" `651 
-V L "in" 2 77 "int16" `653 
-V L "side" 2 77 "int8" `654 
-F G "toInt" 2 77 "int8(int16 in,int8 side)" `652 
-V L "dev_addr" 2 85 "int8" `656 
-V L "from" 2 85 "int16" `657 
-V L "to" 2 85 "int16" `658 
-F G "make_read_request" 2 85 "*int8(int8 dev_addr,int16 from,int16 to)" `655 
-V L "pre_req" 2 90 "int8[6]" `659 
-V L "crc" 2 99 "int16" `660 
-V L "req" 2 100 "int8[8]" `661 
-V L "output" 2 114 "*int8" `663 
-F G "send_request" 2 114 "int8(*int8 output)" `662 
-V L "i" 2 115 "int8" `664 
-V G "request" 0 19 "*int8" `665 
-F G "MAIN" 0 21 "int8()" `666 
-V L "i" 0 23 "int8" `667 
+T G "req_un_type" 2 33 "{req_type request,int8[8] req_str}" `649 
+V G "wCRCTable" 2 35 "[1]" `650 
+V L "nData" 2 65 "*int8" `654 
+V L "wLength" 2 65 "int16" `655 
+F G "CRC16" 2 65 "int16(*int8 nData,int16 wLength)" `653 
+V L "nTemp" 2 66 "int8" `656 
+V L "wCRCWord" 2 67 "int16" `657 
+V L "dev_addr" 2 78 "int8" `659 
+V L "from" 2 78 "int16" `660 
+V L "to" 2 78 "int16" `661 
+F G "make_read_request" 2 78 "*int8(int8 dev_addr,int16 from,int16 to)" `658 
+V L "pre_req" 2 83 "int8[6]" `662 
+V L "crc" 2 92 "int16" `663 
+V L "req" 2 93 "int8[8]" `664 
+V L "output" 2 107 "*int8" `666 
+F G "send_request" 2 107 "int8(*int8 output)" `665 
+V L "i" 2 108 "int8" `667 
+V G "request" 0 19 "*int8" `668 
+F G "MAIN" 0 21 "int8()" `669 
+V L "i" 0 23 "int8" `670 
 F B "reset_cpu" 0 0
 F B "abs" 1 0
 F B "sleep" 0 1
