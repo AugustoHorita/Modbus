@@ -1,7 +1,7 @@
 D G "__PCH__" 0 0 ""5.008""
 D G "__DEVICE__" 0 0 ""
 D G "__DATE__" 0 0 ""03-dez-14""
-D G "__TIME__" 0 0 ""14:43:28"" "* rs485.c"
+D G "__TIME__" 0 0 ""15:39:19"" "* rs485.c"
 c L "set_tris_a" 0 1 1 "*"
 c L "set_tris_a" 0 1 1 "*"
 c L "set_tris_a" 1 1 20 "FUNCTION"
@@ -937,26 +937,34 @@ D G "high" 2 17 "1"
 D G "low" 2 18 "0"
 D G "request_size" 2 20 "8"
 T G "req_type" 2 28 "{int8 addr,int8 cmd,int16 from,int16 to,int16 crc}" `645 
-T G "req_un_type" 2 33 "{req_type request,int8[8] req_str}" `649 
+T G "req_un_type" 2 33 "{req_type request,int8[8] string}" `649 
 V G "wCRCTable" 2 35 "[1]" `650 
 V L "nData" 2 65 "*int8" `654 
 V L "wLength" 2 65 "int16" `655 
 F G "CRC16" 2 65 "int16(*int8 nData,int16 wLength)" `653 
 V L "nTemp" 2 66 "int8" `656 
 V L "wCRCWord" 2 67 "int16" `657 
-V L "dev_addr" 2 78 "int8" `659 
-V L "from" 2 78 "int16" `660 
-V L "to" 2 78 "int16" `661 
-F G "make_read_request" 2 78 "*int8(int8 dev_addr,int16 from,int16 to)" `658 
-V L "pre_req" 2 83 "int8[6]" `662 
-V L "crc" 2 92 "int16" `663 
-V L "req" 2 93 "int8[8]" `664 
-V L "output" 2 107 "*int8" `666 
-F G "send_request" 2 107 "int8(*int8 output)" `665 
-V L "i" 2 108 "int8" `667 
-V G "request" 0 19 "*int8" `668 
-F G "MAIN" 0 21 "int8()" `669 
-V L "i" 0 23 "int8" `670 
+V L "in" 2 78 "int16" `659 
+F G "muda" 2 78 "int16(int16 in)" `658 
+V L "hi" 2 79 "int8" `660 
+V L "lo" 2 80 "int8" `661 
+V L "dev_addr" 2 85 "int8" `663 
+V L "from" 2 85 "int16" `664 
+V L "to" 2 85 "int16" `665 
+F G "make_read_request" 2 85 "*int8(int8 dev_addr,int16 from,int16 to)" `662 
+V L "hi" 2 87 "int8" `666 
+V L "lo" 2 87 "int8" `667 
+V L "a" 2 88 "int16" `668 
+V L "b" 2 88 "int16" `669 
+V L "pre_req" 2 93 "int8[6]" `670 
+V L "crc" 2 102 "int16" `671 
+V L "req" 2 104 "req_un_type" `672 
+V L "output" 2 115 "*int8" `674 
+F G "send_request" 2 115 "int8(*int8 output)" `673 
+V L "i" 2 116 "int8" `675 
+V G "request" 0 19 "*int8" `676 
+F G "MAIN" 0 21 "int8()" `677 
+V L "i" 0 23 "int8" `678 
 F B "reset_cpu" 0 0
 F B "abs" 1 0
 F B "sleep" 0 1

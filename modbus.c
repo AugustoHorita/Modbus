@@ -29,7 +29,7 @@ typedef struct req_str {
 
 typedef union req_un {
 	req_type request;
-	int req_str[sizeof(req_type)];
+	int string[sizeof(req_type)];
 } req_un_type;
 
 static const long wCRCTable[] = { 0X0000, 0XC0C1, 0XC181, 0X0140, 0XC301,
@@ -75,7 +75,17 @@ long CRC16(int *nData, long wLength) {
 	return wCRCWord;
 }
 
+long troca(long in) {
+	int hi = make8(in, 1);
+	int lo = make8(in, 0);
+
+	return make16(lo, hi);
+}
+
 int *make_read_request(int dev_addr, long from, long to) {
+
+	int hi, lo;
+	long a, b;
 
 	if (from >= to)
 		return -1;
@@ -90,18 +100,16 @@ int *make_read_request(int dev_addr, long from, long to) {
 	pre_req[5] = make8(to, 0);
 
 	long crc = CRC16(pre_req, 6);
-	int req[request_size];
 
-	req[0] = pre_req[0];
-	req[1] = pre_req[1];
-	req[2] = pre_req[2];
-	req[3] = pre_req[3];
-	req[4] = pre_req[4];
-	req[5] = pre_req[5];
-	req[6] = make8(crc, 0);
-	req[7] = make8(crc, 1);
+	req_un_type req;
 
-	return req;
+	req.request.addr = dev_addr;
+	req.request.cmd = read_holding_registers;
+	req.request.from = troca(from);
+	req.request.to = troca(to);
+	req.request.crc = crc;
+
+	return req.string;
 }
 
 int send_request(int *output) {

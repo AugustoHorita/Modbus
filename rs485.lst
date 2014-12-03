@@ -1,16 +1,16 @@
-CCS PCH C Compiler, Version 5.008, 5967               03-dez-14 14:43
+CCS PCH C Compiler, Version 5.008, 5967               03-dez-14 15:39
 
                Filename:   D:\Projetos\Modbus\rs485.lst
 
-               ROM used:   980 bytes (3%)
-                           Largest free fragment is 31788
+               ROM used:   1022 bytes (3%)
+                           Largest free fragment is 31746
                RAM used:   14 (1%) at main() level
-                           36 (2%) worst case
+                           42 (3%) worst case
                Stack used: 3 locations
                Stack size: 31
 
 *
-0000:  GOTO   0360
+0000:  GOTO   038A
 .................... /* 
 ....................  * rs485.c 
 ....................  * 
@@ -292,40 +292,40 @@ CCS PCH C Compiler, Version 5.008, 5967               03-dez-14 14:43
 ....................  
 .................... #use delay(clock=10MHz) 
 *
-02EC:  CLRF   FEA
-02EE:  MOVLW  0E
-02F0:  MOVWF  FE9
-02F2:  MOVF   FEF,W
-02F4:  BZ    0312
-02F6:  MOVLW  03
-02F8:  MOVWF  01
-02FA:  CLRF   00
-02FC:  DECFSZ 00,F
-02FE:  BRA    02FC
-0300:  DECFSZ 01,F
-0302:  BRA    02FA
-0304:  MOVLW  3C
-0306:  MOVWF  00
-0308:  DECFSZ 00,F
-030A:  BRA    0308
-030C:  BRA    030E
-030E:  DECFSZ FEF,F
-0310:  BRA    02F6
-0312:  GOTO   03BE (RETURN)
+0316:  CLRF   FEA
+0318:  MOVLW  0E
+031A:  MOVWF  FE9
+031C:  MOVF   FEF,W
+031E:  BZ    033C
+0320:  MOVLW  03
+0322:  MOVWF  01
+0324:  CLRF   00
+0326:  DECFSZ 00,F
+0328:  BRA    0326
+032A:  DECFSZ 01,F
+032C:  BRA    0324
+032E:  MOVLW  3C
+0330:  MOVWF  00
+0332:  DECFSZ 00,F
+0334:  BRA    0332
+0336:  BRA    0338
+0338:  DECFSZ FEF,F
+033A:  BRA    0320
+033C:  GOTO   03E8 (RETURN)
 .................... #use rs232(xmit=PIN_C6, rcv=PIN_c7, enable=PIN_C5, baud=19200) 
-0316:  BCF    F94.5
-0318:  BSF    F8B.5
-031A:  BTFSS  F9E.4
-031C:  BRA    031A
-031E:  MOVFF  11,FAD
-0322:  NOP   
-0324:  BCF    F94.5
-0326:  BSF    F8B.5
-0328:  BTFSS  FAC.1
-032A:  BRA    0328
-032C:  BCF    F94.5
-032E:  BCF    F8B.5
-0330:  GOTO   0354 (RETURN)
+0340:  BCF    F94.5
+0342:  BSF    F8B.5
+0344:  BTFSS  F9E.4
+0346:  BRA    0344
+0348:  MOVFF  11,FAD
+034C:  NOP   
+034E:  BCF    F94.5
+0350:  BSF    F8B.5
+0352:  BTFSS  FAC.1
+0354:  BRA    0352
+0356:  BCF    F94.5
+0358:  BCF    F8B.5
+035A:  GOTO   037E (RETURN)
 ....................  
 .................... #include "modbus.c" 
 .................... /* 
@@ -359,7 +359,7 @@ CCS PCH C Compiler, Version 5.008, 5967               03-dez-14 14:43
 ....................  
 .................... typedef union req_un { 
 .................... 	req_type request; 
-.................... 	int req_str[sizeof(req_type)]; 
+.................... 	int string[sizeof(req_type)]; 
 .................... } req_un_type; 
 ....................  
 .................... static const long wCRCTable[] = { 0X0000, 0XC0C1, 0XC181, 0X0140, 0XC301, 
@@ -394,155 +394,177 @@ CCS PCH C Compiler, Version 5.008, 5967               03-dez-14 14:43
 ....................  
 .................... long CRC16(int *nData, long wLength) { 
 *
-0212:  SETF   22
-0214:  SETF   21
+0212:  SETF   28
+0214:  SETF   27
 .................... 	int nTemp; 
 .................... 	long wCRCWord = 0xFFFF; 
 ....................  
 .................... 	while (wLength--) { 
-0216:  MOVFF  1F,03
-021A:  MOVF   1E,W
+0216:  MOVFF  25,03
+021A:  MOVF   24,W
 021C:  BTFSC  FD8.2
-021E:  DECF   1F,F
-0220:  DECF   1E,F
+021E:  DECF   25,F
+0220:  DECF   24,F
 0222:  IORWF  03,W
 0224:  BZ    0270
 .................... 		nTemp = *nData++ ^ wCRCWord; 
-0226:  MOVFF  1D,03
-022A:  MOVF   1C,W
-022C:  INCF   1C,F
+0226:  MOVFF  23,03
+022A:  MOVF   22,W
+022C:  INCF   22,F
 022E:  BTFSC  FD8.2
-0230:  INCF   1D,F
+0230:  INCF   23,F
 0232:  MOVWF  FE9
 0234:  MOVFF  03,FEA
 0238:  MOVF   FEF,W
-023A:  XORWF  21,W
-023C:  MOVWF  20
+023A:  XORWF  27,W
+023C:  MOVWF  26
 .................... 		wCRCWord >>= 8; 
-023E:  MOVFF  22,21
-0242:  CLRF   22
+023E:  MOVFF  28,27
+0242:  CLRF   28
 .................... 		wCRCWord ^= wCRCTable[nTemp]; 
 0244:  CLRF   03
-0246:  MOVFF  20,02
+0246:  MOVFF  26,02
 024A:  BCF    FD8.0
 024C:  RLCF   02,F
 024E:  RLCF   03,F
 0250:  MOVF   02,W
-0252:  MOVFF  FF2,23
+0252:  MOVFF  FF2,29
 0256:  BCF    FF2.7
 0258:  MOVFF  03,FF7
 025C:  RCALL  0004
 025E:  TBLRD*+
 0260:  MOVFF  FF5,03
-0264:  BTFSC  23.7
+0264:  BTFSC  29.7
 0266:  BSF    FF2.7
-0268:  XORWF  21,F
+0268:  XORWF  27,F
 026A:  MOVF   03,W
-026C:  XORWF  22,F
+026C:  XORWF  28,F
 026E:  BRA    0216
 .................... 	} 
 ....................  
 .................... 	return wCRCWord; 
-0270:  MOVFF  21,01
-0274:  MOVFF  22,02
-0278:  GOTO   02B8 (RETURN)
+0270:  MOVFF  27,01
+0274:  MOVFF  28,02
+0278:  GOTO   02CE (RETURN)
+.................... } 
+....................  
+.................... long muda(long in) { 
+027C:  MOVF   23,W
+027E:  MOVWF  24
+0280:  MOVFF  22,25
+.................... 	int hi = make8(in, 1); 
+.................... 	int lo = make8(in, 0); 
+....................  
+.................... 	return make16(lo, hi); 
+0284:  MOVFF  25,03
+0288:  MOVFF  24,01
+028C:  MOVFF  25,02
+0290:  RETURN 0
 .................... } 
 ....................  
 .................... int *make_read_request(int dev_addr, long from, long to) { 
 ....................  
+.................... 	int hi, lo; 
+.................... 	long a, b; 
+....................  
 .................... 	if (from >= to) 
-027C:  MOVF   11,W
-027E:  SUBWF  0F,W
-0280:  BNC   0292
-0282:  BNZ   028A
-0284:  MOVF   10,W
-0286:  SUBWF  0E,W
-0288:  BNC   0292
+0292:  MOVF   11,W
+0294:  SUBWF  0F,W
+0296:  BNC   02A8
+0298:  BNZ   02A0
+029A:  MOVF   10,W
+029C:  SUBWF  0E,W
+029E:  BNC   02A8
 .................... 		return -1; 
-028A:  MOVLW  FF
-028C:  MOVWF  01
-028E:  MOVWF  02
-0290:  BRA    02E8
+02A0:  MOVLW  FF
+02A2:  MOVWF  01
+02A4:  MOVWF  02
+02A6:  BRA    0312
 ....................  
 .................... 	static int pre_req[6]; 
 ....................  
 .................... 	pre_req[0] = dev_addr; 
-0292:  MOVFF  0D,04
+02A8:  MOVFF  0D,04
 .................... 	pre_req[1] = read_holding_registers; 
-0296:  MOVLW  03
-0298:  MOVWF  05
+02AC:  MOVLW  03
+02AE:  MOVWF  05
 .................... 	pre_req[2] = make8(from, 1); 
-029A:  MOVFF  0F,06
+02B0:  MOVFF  0F,06
 .................... 	pre_req[3] = make8(from, 0); 
-029E:  MOVFF  0E,07
+02B4:  MOVFF  0E,07
 .................... 	pre_req[4] = make8(to, 1); 
-02A2:  MOVFF  11,08
+02B8:  MOVFF  11,08
 .................... 	pre_req[5] = make8(to, 0); 
-02A6:  MOVFF  10,09
+02BC:  MOVFF  10,09
 ....................  
 .................... 	long crc = CRC16(pre_req, 6); 
-.................... 	int req[8]; 
-02AA:  CLRF   1D
-02AC:  MOVLW  04
-02AE:  MOVWF  1C
-02B0:  CLRF   1F
-02B2:  MOVLW  06
-02B4:  MOVWF  1E
-02B6:  BRA    0212
-02B8:  MOVFF  02,13
-02BC:  MOVFF  01,12
 ....................  
-.................... 	req[0] = pre_req[0]; 
-02C0:  MOVFF  04,14
-.................... 	req[1] = pre_req[1]; 
-02C4:  MOVFF  05,15
-.................... 	req[2] = pre_req[2]; 
-02C8:  MOVFF  06,16
-.................... 	req[3] = pre_req[3]; 
-02CC:  MOVFF  07,17
-.................... 	req[4] = pre_req[4]; 
-02D0:  MOVFF  08,18
-.................... 	req[5] = pre_req[5]; 
-02D4:  MOVFF  09,19
-.................... 	req[6] = make8(crc, 0); 
-02D8:  MOVFF  12,1A
-.................... 	req[7] = make8(crc, 1); 
-02DC:  MOVFF  13,1B
+.................... 	req_un_type req; 
+02C0:  CLRF   23
+02C2:  MOVLW  04
+02C4:  MOVWF  22
+02C6:  CLRF   25
+02C8:  MOVLW  06
+02CA:  MOVWF  24
+02CC:  BRA    0212
+02CE:  MOVFF  02,19
+02D2:  MOVFF  01,18
 ....................  
-.................... 	return req; 
-02E0:  MOVLW  14
-02E2:  MOVWF  01
-02E4:  MOVLW  00
-02E6:  MOVWF  02
-02E8:  GOTO   03AC (RETURN)
+.................... 	req.request.addr = dev_addr; 
+02D6:  MOVFF  0D,1A
+.................... 	req.request.cmd = read_holding_registers; 
+02DA:  MOVLW  03
+02DC:  MOVWF  1B
+.................... 	req.request.from = muda(from); 
+02DE:  MOVFF  0F,23
+02E2:  MOVFF  0E,22
+02E6:  RCALL  027C
+02E8:  MOVFF  02,1D
+02EC:  MOVFF  01,1C
+.................... 	req.request.to = muda(to); 
+02F0:  MOVFF  11,23
+02F4:  MOVFF  10,22
+02F8:  RCALL  027C
+02FA:  MOVFF  02,1F
+02FE:  MOVFF  01,1E
+.................... 	req.request.crc = crc; 
+0302:  MOVFF  19,21
+0306:  MOVFF  18,20
+....................  
+.................... 	return req.string; 
+030A:  MOVLW  1A
+030C:  MOVWF  01
+030E:  MOVLW  00
+0310:  MOVWF  02
+0312:  GOTO   03D6 (RETURN)
 .................... } 
 ....................  
 .................... int send_request(int *output) { 
 .................... 	int i; 
 .................... 	for (i = 0; i < request_size; ++i) 
 *
-0334:  CLRF   0F
-0336:  MOVF   0F,W
-0338:  SUBLW  07
-033A:  BNC   0358
+035E:  CLRF   0F
+0360:  MOVF   0F,W
+0362:  SUBLW  07
+0364:  BNC   0382
 .................... 		putc(output[i]); 
-033C:  CLRF   03
-033E:  MOVF   0F,W
-0340:  ADDWF  0D,W
-0342:  MOVWF  FE9
-0344:  MOVF   0E,W
-0346:  ADDWFC 03,W
-0348:  MOVWF  FEA
-034A:  MOVFF  FEF,10
-034E:  MOVFF  10,11
-0352:  BRA    0316
-0354:  INCF   0F,F
-0356:  BRA    0336
+0366:  CLRF   03
+0368:  MOVF   0F,W
+036A:  ADDWF  0D,W
+036C:  MOVWF  FE9
+036E:  MOVF   0E,W
+0370:  ADDWFC 03,W
+0372:  MOVWF  FEA
+0374:  MOVFF  FEF,10
+0378:  MOVFF  10,11
+037C:  BRA    0340
+037E:  INCF   0F,F
+0380:  BRA    0360
 ....................  
 .................... 	return 0; 
-0358:  MOVLW  00
-035A:  MOVWF  01
-035C:  GOTO   03CC (RETURN)
+0382:  MOVLW  00
+0384:  MOVWF  01
+0386:  GOTO   03F6 (RETURN)
 .................... } 
 ....................  
 ....................  
@@ -551,74 +573,74 @@ CCS PCH C Compiler, Version 5.008, 5967               03-dez-14 14:43
 .................... int *request; 
 ....................  
 .................... int main(void) { 
-0360:  CLRF   FF8
-0362:  BCF    FD0.7
-0364:  BCF    F94.5
-0366:  BCF    F8B.5
-0368:  BSF    FB8.3
-036A:  MOVLW  81
-036C:  MOVWF  FAF
-036E:  MOVLW  00
-0370:  MOVWF  FB0
-0372:  MOVLW  A6
-0374:  MOVWF  FAC
-0376:  MOVLW  90
-0378:  MOVWF  FAB
-037A:  MOVLW  00
-037C:  MOVWF  F7E
-037E:  BCF    FC1.4
-0380:  BCF    FC1.5
-0382:  MOVF   F7F,W
-0384:  ANDLW  E0
-0386:  MOVWF  F7F
-0388:  BCF    F79.5
-038A:  BCF    F79.4
-038C:  CLRF   F7A
-038E:  CLRF   F7B
-0390:  CLRF   04
-0392:  CLRF   05
-0394:  CLRF   06
-0396:  CLRF   07
-0398:  CLRF   08
-039A:  CLRF   09
+038A:  CLRF   FF8
+038C:  BCF    FD0.7
+038E:  BCF    F94.5
+0390:  BCF    F8B.5
+0392:  BSF    FB8.3
+0394:  MOVLW  81
+0396:  MOVWF  FAF
+0398:  MOVLW  00
+039A:  MOVWF  FB0
+039C:  MOVLW  A6
+039E:  MOVWF  FAC
+03A0:  MOVLW  90
+03A2:  MOVWF  FAB
+03A4:  MOVLW  00
+03A6:  MOVWF  F7E
+03A8:  BCF    FC1.4
+03AA:  BCF    FC1.5
+03AC:  MOVF   F7F,W
+03AE:  ANDLW  E0
+03B0:  MOVWF  F7F
+03B2:  BCF    F79.5
+03B4:  BCF    F79.4
+03B6:  CLRF   F7A
+03B8:  CLRF   F7B
+03BA:  CLRF   04
+03BC:  CLRF   05
+03BE:  CLRF   06
+03C0:  CLRF   07
+03C2:  CLRF   08
+03C4:  CLRF   09
 ....................  
 .................... 	int i; 
 ....................  
 .................... 	request = make_read_request(1, 0, 10); 
-039C:  MOVLW  01
-039E:  MOVWF  0D
-03A0:  CLRF   0F
-03A2:  CLRF   0E
-03A4:  CLRF   11
-03A6:  MOVLW  0A
-03A8:  MOVWF  10
-03AA:  BRA    027C
-03AC:  MOVFF  02,0B
-03B0:  MOVFF  01,0A
+03C6:  MOVLW  01
+03C8:  MOVWF  0D
+03CA:  CLRF   0F
+03CC:  CLRF   0E
+03CE:  CLRF   11
+03D0:  MOVLW  0A
+03D2:  MOVWF  10
+03D4:  BRA    0292
+03D6:  MOVFF  02,0B
+03DA:  MOVFF  01,0A
 ....................  
 .................... 	while (TRUE) { 
 ....................  
 .................... 		delay_ms(1000); 
-03B4:  MOVLW  04
-03B6:  MOVWF  0D
-03B8:  MOVLW  FA
-03BA:  MOVWF  0E
-03BC:  BRA    02EC
-03BE:  DECFSZ 0D,F
-03C0:  BRA    03B8
+03DE:  MOVLW  04
+03E0:  MOVWF  0D
+03E2:  MOVLW  FA
+03E4:  MOVWF  0E
+03E6:  BRA    0316
+03E8:  DECFSZ 0D,F
+03EA:  BRA    03E2
 ....................  
 .................... 		send_request(request); 
-03C2:  MOVFF  0B,0E
-03C6:  MOVFF  0A,0D
-03CA:  BRA    0334
-03CC:  BRA    03B4
+03EC:  MOVFF  0B,0E
+03F0:  MOVFF  0A,0D
+03F4:  BRA    035E
+03F6:  BRA    03DE
 .................... 	} 
 ....................  
 .................... 	return 0; 
-03CE:  MOVLW  00
-03D0:  MOVWF  01
+03F8:  MOVLW  00
+03FA:  MOVWF  01
 .................... } 
-03D2:  SLEEP 
+03FC:  SLEEP 
 
 Configuration Fuses:
    Word  1: C200   HS FCMEN IESO
