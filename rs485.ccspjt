@@ -1,0 +1,16 @@
+[PROJECT]
+Target=rs485.hex
+Processor_Text=PIC18F45K20
+CCSVersion=5.008
+Compiler=PCH
+[Target Data]
+FileList=rs485.c
+[Directories]
+Include=C:\PICC\devices\;C:\PICC\drivers\;D:\Projetos\Modbus\
+[rs485.c]
+Type=4
+[mru-list]
+1=rs485.c
+[Units]
+Count=1
+1=rs485 (main)
