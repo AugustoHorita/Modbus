@@ -93,9 +93,6 @@ long troca(long in) {
 
 int *make_read_request(int dev_addr, long from, long to) {
 
-	int hi, lo;
-	long a, b;
-
 	if (from >= to)
 		return -1;
 

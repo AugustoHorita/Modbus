@@ -1,6 +1,6 @@
 [PROJECT]
 Target=rs485.hex
-Processor_Text=PIC18F45K20
+Processor_Text=PIC18F452
 CCSVersion=5.008
 Compiler=PCH
 [Target Data]

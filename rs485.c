@@ -5,17 +5,15 @@
  *      Author: cuki
  */
 
-#include <18F45K20.h>
+#include <18F452.h>
 
 #fuses HS
 
-#use delay(clock=10MHz)
+#use delay(clock=15MHz)
 #use rs232(xmit=PIN_C6, rcv=PIN_c7, enable=PIN_C5, baud=19200)
 
 #include "modbus.c"
 
-//int cont[8] = { 0x03, 0x03, 0x00, 0x00, 0x00, 0x0A, 0xC4, 0x2F };
-//int request[8];
 int *request;
 
 int main(void) {
