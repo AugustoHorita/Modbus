@@ -14,9 +14,6 @@
 #define write_multiple_coils		0x0F
 #define Write_multiple_registers	0x10
 
-#define high	1
-#define low		0
-
 #define request_size	8
 
 typedef struct simple_req_str {
@@ -103,23 +100,21 @@ int *make_read_request(int dev_addr, long from, long to) {
 	pre_request.structure.from = troca(from);
 	pre_request.structure.to = troca(to);
 
-	long crc = CRC16(pre_request.string, 6);
-
 	req_un_type request;
 
 	request.structure.addr = dev_addr;
 	request.structure.cmd = read_holding_registers;
 	request.structure.from = troca(from);
 	request.structure.to = troca(to);
-	request.structure.crc = crc;
+	request.structure.crc = CRC16(pre_request.string, 6);
 
 	return request.string;
 }
 
 int send_request(int *output) {
 	int i;
-	for (i = 0; i < request_size; ++i)
-		putc(output[i]);
+	for (i = 0; i < request_size; ++i, ++output)
+		putc(*output);
 
 	return 0;
 }

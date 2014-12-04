@@ -1,7 +1,7 @@
 D G "__PCH__" 0 0 ""5.008""
 D G "__DEVICE__" 0 0 ""
-D G "__DATE__" 0 0 ""03-dez-14""
-D G "__TIME__" 0 0 ""17:22:39"" "* rs485.c"
+D G "__DATE__" 0 0 ""04-dez-14""
+D G "__TIME__" 0 0 ""16:45:38"" "* rs485.c"
 c L "set_tris_a" 0 1 1 "*"
 c L "set_tris_a" 0 1 1 "*"
 c L "set_tris_a" 1 1 17 "FUNCTION"
@@ -821,34 +821,31 @@ D G "write_single_coil" 2 12 "0x05"
 D G "write_single_register" 2 13 "0x06"
 D G "write_multiple_coils" 2 14 "0x0F"
 D G "Write_multiple_registers" 2 15 "0x10"
-D G "high" 2 17 "1"
-D G "low" 2 18 "0"
-D G "request_size" 2 20 "8"
-T G "s_req_type" 2 27 "{int8 addr,int8 cmd,int16 from,int16 to}" `632 
-T G "s_un_req_type" 2 32 "{s_req_type structure,int8[6] string}" `636 
-T G "req_type" 2 40 "{int8 addr,int8 cmd,int16 from,int16 to,int16 crc}" `643 
-T G "req_un_type" 2 45 "{req_type structure,int8[8] string}" `647 
-V G "wCRCTable" 2 47 "[1]" `648 
-V L "nData" 2 77 "*int8" `652 
-V L "wLength" 2 77 "int16" `653 
-F G "CRC16" 2 77 "int16(*int8 nData,int16 wLength)" `651 
-V L "nTemp" 2 78 "int8" `654 
-V L "wCRCWord" 2 79 "int16" `655 
-V L "in" 2 90 "int16" `657 
-F G "troca" 2 90 "int16(int16 in)" `656 
-V L "dev_addr" 2 94 "int8" `659 
-V L "from" 2 94 "int16" `660 
-V L "to" 2 94 "int16" `661 
-F G "make_read_request" 2 94 "*int8(int8 dev_addr,int16 from,int16 to)" `658 
-V L "pre_request" 2 99 "s_un_req_type" `662 
-V L "crc" 2 106 "int16" `663 
-V L "request" 2 108 "req_un_type" `664 
-V L "output" 2 119 "*int8" `666 
-F G "send_request" 2 119 "int8(*int8 output)" `665 
-V L "i" 2 120 "int8" `667 
-V G "request" 0 17 "*int8" `668 
-F G "MAIN" 0 19 "int8()" `669 
-V L "i" 0 21 "int8" `670 
+D G "request_size" 2 17 "8"
+T G "s_req_type" 2 24 "{int8 addr,int8 cmd,int16 from,int16 to}" `632 
+T G "s_un_req_type" 2 29 "{s_req_type structure,int8[6] string}" `636 
+T G "req_type" 2 37 "{int8 addr,int8 cmd,int16 from,int16 to,int16 crc}" `643 
+T G "req_un_type" 2 42 "{req_type structure,int8[8] string}" `647 
+V G "wCRCTable" 2 44 "[1]" `648 
+V L "nData" 2 74 "*int8" `652 
+V L "wLength" 2 74 "int16" `653 
+F G "CRC16" 2 74 "int16(*int8 nData,int16 wLength)" `651 
+V L "nTemp" 2 75 "int8" `654 
+V L "wCRCWord" 2 76 "int16" `655 
+V L "in" 2 87 "int16" `657 
+F G "troca" 2 87 "int16(int16 in)" `656 
+V L "dev_addr" 2 91 "int8" `659 
+V L "from" 2 91 "int16" `660 
+V L "to" 2 91 "int16" `661 
+F G "make_read_request" 2 91 "*int8(int8 dev_addr,int16 from,int16 to)" `658 
+V L "pre_request" 2 96 "s_un_req_type" `662 
+V L "request" 2 103 "req_un_type" `663 
+V L "output" 2 114 "*int8" `665 
+F G "send_request" 2 114 "int8(*int8 output)" `664 
+V L "i" 2 115 "int8" `666 
+V G "request" 0 17 "*int8" `667 
+F G "MAIN" 0 19 "int8()" `668 
+V L "i" 0 21 "int8" `669 
 F B "reset_cpu" 0 0
 F B "abs" 1 0
 F B "sleep" 0 0
