@@ -1,7 +1,7 @@
 D G "__PCH__" 0 0 ""5.008""
 D G "__DEVICE__" 0 0 ""
-D G "__DATE__" 0 0 ""04-dez-14""
-D G "__TIME__" 0 0 ""16:45:38"" "* rs485.c"
+D G "__DATE__" 0 0 ""05-dez-14""
+D G "__TIME__" 0 0 ""14:52:55"" "* rs485.c"
 c L "set_tris_a" 0 1 1 "*"
 c L "set_tris_a" 0 1 1 "*"
 c L "set_tris_a" 1 1 17 "FUNCTION"
@@ -845,7 +845,6 @@ F G "send_request" 2 114 "int8(*int8 output)" `664
 V L "i" 2 115 "int8" `666 
 V G "request" 0 17 "*int8" `667 
 F G "MAIN" 0 19 "int8()" `668 
-V L "i" 0 21 "int8" `669 
 F B "reset_cpu" 0 0
 F B "abs" 1 0
 F B "sleep" 0 0

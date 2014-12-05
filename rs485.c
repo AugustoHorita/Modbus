@@ -18,8 +18,6 @@ int *request;
 
 int main(void) {
 
-	int i;
-
 	request = make_read_request(1, 0, 10);
 
 	while (TRUE) {
