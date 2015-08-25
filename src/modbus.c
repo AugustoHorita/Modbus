@@ -6,6 +6,8 @@
  */
 
 #include "modbus.h"
+#include <string.h>
+#include <stdio.h>
 
 typedef struct simple_req_str {
 	unsigned char addr;
@@ -16,7 +18,7 @@ typedef struct simple_req_str {
 
 typedef union simple_req_un {
 	s_req_type structure;
-	int string[sizeof(s_req_type)];
+	unsigned char string[sizeof(s_req_type)];
 } s_un_req_type;
 
 typedef struct req_str {
@@ -87,7 +89,7 @@ unsigned char make8(unsigned short word, unsigned char index) {
 unsigned short make16(unsigned char hiByte, unsigned char loByte) {
 	unsigned short ret = 0;
 
-	ret = hiByte & 0xFF << 8;
+	ret = (hiByte & 0xFF) << 8;
 	ret |= loByte & 0xFF;
 
 	return ret;
@@ -97,8 +99,8 @@ long troca(long in) {
 	return make16(make8(in, 0), make8(in, 1));
 }
 
-unsigned char *make_read_request(unsigned char dev_addr, unsigned short from,
-		unsigned short to) {
+const unsigned char *make_request(unsigned char dev_addr, unsigned short from,
+		unsigned short to, unsigned char type) {
 
 	if (from >= to)
 		return 0;
@@ -106,14 +108,14 @@ unsigned char *make_read_request(unsigned char dev_addr, unsigned short from,
 	s_un_req_type pre_request;
 
 	pre_request.structure.addr = dev_addr;
-	pre_request.structure.cmd = read_holding_registers;
+	pre_request.structure.cmd = type;
 	pre_request.structure.from = troca(from);
 	pre_request.structure.to = troca(to);
 
-	req_un_type request;
+	static req_un_type request;
 
 	request.structure.addr = dev_addr;
-	request.structure.cmd = read_holding_registers;
+	request.structure.cmd = type;
 	request.structure.from = troca(from);
 	request.structure.to = troca(to);
 	request.structure.crc = CRC16(pre_request.string, 6);
@@ -121,11 +123,21 @@ unsigned char *make_read_request(unsigned char dev_addr, unsigned short from,
 	return request.string;
 }
 
-unsigned char send_request(unsigned char *output) {
+const unsigned char *make_read_request(unsigned char dev_addr,
+		unsigned short from, unsigned short to) {
+	return make_request(dev_addr, from, to, read_holding_registers);
+}
 
+const unsigned char *make_write_request(unsigned char dev_addr,
+		unsigned short reg_addr, unsigned short reg_value) {
+	return make_request(dev_addr, reg_addr, reg_value, write_single_register);
+}
+
+unsigned char send_request(unsigned char *output) {
 	unsigned char i;
+
 	for (i = 0; i < request_size; ++i, ++output)
-		putc(*output);
+		putc(*output, stdout);
 
 	return 0;
 }

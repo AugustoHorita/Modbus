@@ -22,8 +22,12 @@
 #define request_size				8
 
 unsigned short CRC16(unsigned char *nData, unsigned short wLength);
-unsigned char *make_read_request(unsigned char dev_addr, unsigned short from,
-		unsigned short to);
+const unsigned char *make_request(unsigned char dev_addr, unsigned short from,
+		unsigned short to, unsigned char type);
+const unsigned char *make_read_request(unsigned char dev_addr,
+		unsigned short from, unsigned short to);
+const unsigned char *make_write_request(unsigned char dev_addr,
+		unsigned short reg_addr, unsigned short reg_value);
 unsigned char send_request(unsigned char *output);
 
 #endif /* MODBUS_H_ */
