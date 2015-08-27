@@ -29,5 +29,7 @@ const unsigned char *make_read_request(unsigned char dev_addr,
 const unsigned char *make_write_request(unsigned char dev_addr,
 		unsigned short reg_addr, unsigned short reg_value);
 unsigned char send_request(unsigned char *output);
+unsigned char *fromFloat(float in);
+float toFloat(unsigned char *in);
 
 #endif /* MODBUS_H_ */

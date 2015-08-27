@@ -6,7 +6,6 @@
  */
 
 #include "modbus.h"
-#include <string.h>
 #include <stdio.h>
 
 typedef struct simple_req_str {
@@ -33,6 +32,11 @@ typedef union req_un {
 	req_type structure;
 	unsigned char string[sizeof(req_type)];
 } req_un_type;
+
+typedef union req_float {
+	float mantissa;
+	unsigned char vetor[sizeof(float)];
+} req_un_float;
 
 static const unsigned short wCRCTable[] = { 0X0000, 0XC0C1, 0XC181, 0X0140,
 		0XC301, 0X03C0, 0X0280, 0XC241, 0XC601, 0X06C0, 0X0780, 0XC741, 0X0500,
@@ -77,7 +81,7 @@ unsigned short CRC16(unsigned char *nData, unsigned short wLength) {
 	return wCRCWord;
 }
 
-unsigned char make8(unsigned short word, unsigned char index) {
+unsigned char makeByte(unsigned short word, unsigned char index) {
 	unsigned char ret = 0;
 	unsigned short mask = 0xFF << (index * 8);
 
@@ -86,7 +90,7 @@ unsigned char make8(unsigned short word, unsigned char index) {
 	return ret;
 }
 
-unsigned short make16(unsigned char hiByte, unsigned char loByte) {
+unsigned short makeWord(unsigned char hiByte, unsigned char loByte) {
 	unsigned short ret = 0;
 
 	ret = (hiByte & 0xFF) << 8;
@@ -96,7 +100,7 @@ unsigned short make16(unsigned char hiByte, unsigned char loByte) {
 }
 
 long troca(long in) {
-	return make16(make8(in, 0), make8(in, 1));
+	return makeWord(makeByte(in, 0), makeByte(in, 1));
 }
 
 const unsigned char *make_request(unsigned char dev_addr, unsigned short from,
@@ -140,4 +144,22 @@ unsigned char send_request(unsigned char *output) {
 		putc(*output, stdout);
 
 	return 0;
+}
+
+unsigned char *fromFloat(float in) {
+	static req_un_float emFloat;
+
+	emFloat.mantissa = in;
+
+	return emFloat.vetor;
+}
+
+float toFloat(unsigned char *in) {
+	static req_un_float emFloat;
+	int cont;
+
+	for (cont = 0; cont < 4; ++cont)
+		emFloat.vetor[cont] = in[cont];
+
+	return emFloat.mantissa;
 }
