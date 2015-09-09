@@ -30,7 +30,7 @@
 
 # Debug files
 *.dSYM/
-/Debug/
+Debug/
 
 *.pydevproject
 .project
