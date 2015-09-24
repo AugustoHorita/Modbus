@@ -20,16 +20,18 @@
 #define high						1
 #define low							0
 #define request_size				8
+#define buffer_s					256
 
-unsigned short CRC16(unsigned char *nData, unsigned short wLength);
-const unsigned char *make_request(unsigned char dev_addr, unsigned short from,
+extern unsigned short CRC16(unsigned char *nData, unsigned short wLength);
+extern unsigned char *make_request(unsigned char dev_addr, unsigned short from,
 		unsigned short to, unsigned char type);
-const unsigned char *make_read_request(unsigned char dev_addr,
-		unsigned short from, unsigned short to);
-const unsigned char *make_write_request(unsigned char dev_addr,
+extern unsigned char *make_read_request(unsigned char dev_addr,
+		unsigned short from, unsigned short nr);
+extern unsigned char *make_write_request(unsigned char dev_addr,
 		unsigned short reg_addr, unsigned short reg_value);
-unsigned char send_request(unsigned char *output);
-unsigned char *fromFloat(float in);
-float toFloat(unsigned char *in);
+extern int get_device(int fd, unsigned char dev_addr, unsigned short reg_addr,
+		unsigned short reg_data, unsigned char *device_memorie);
+extern unsigned char *fromFloat(float in);
+extern float toFloat(unsigned char *in);
 
 #endif /* MODBUS_H_ */

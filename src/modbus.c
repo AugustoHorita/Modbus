@@ -6,7 +6,9 @@
  */
 
 #include "modbus.h"
+#include "serial.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct simple_req_str {
 	unsigned char addr;
@@ -33,10 +35,10 @@ typedef union req_un {
 	unsigned char string[sizeof(req_type)];
 } req_un_type;
 
-typedef union req_float {
-	float mantissa;
-	unsigned char vetor[sizeof(float)];
-} req_un_float;
+union {
+	float a;
+	unsigned char b[sizeof(float)];
+} un;
 
 static const unsigned short wCRCTable[] = { 0X0000, 0XC0C1, 0XC181, 0X0140,
 		0XC301, 0X03C0, 0X0280, 0XC241, 0XC601, 0X06C0, 0X0780, 0XC741, 0X0500,
@@ -68,19 +70,6 @@ static const unsigned short wCRCTable[] = { 0X0000, 0XC0C1, 0XC181, 0X0140,
 		0X4C80, 0X8C41, 0X4400, 0X84C1, 0X8581, 0X4540, 0X8701, 0X47C0, 0X4680,
 		0X8641, 0X8201, 0X42C0, 0X4380, 0X8341, 0X4100, 0X81C1, 0X8081, 0X4040 };
 
-unsigned short CRC16(unsigned char *nData, unsigned short wLength) {
-	unsigned char nTemp;
-	unsigned short wCRCWord = 0xFFFF;
-
-	while (wLength--) {
-		nTemp = *nData++ ^ wCRCWord;
-		wCRCWord >>= 8;
-		wCRCWord ^= wCRCTable[nTemp];
-	}
-
-	return wCRCWord;
-}
-
 unsigned char makeByte(unsigned short word, unsigned char index) {
 	unsigned char ret = 0;
 	unsigned short mask = 0xFF << (index * 8);
@@ -99,67 +88,107 @@ unsigned short makeWord(unsigned char hiByte, unsigned char loByte) {
 	return ret;
 }
 
-long troca(long in) {
+unsigned short troca(unsigned short in) {
 	return makeWord(makeByte(in, 0), makeByte(in, 1));
 }
 
-const unsigned char *make_request(unsigned char dev_addr, unsigned short from,
-		unsigned short to, unsigned char type) {
+unsigned short CRC16(unsigned char *nData, unsigned short wLength) {
+	unsigned char nTemp;
+	unsigned short wCRCWord = 0xFFFF;
 
-	if (from >= to)
-		return 0;
+	while (wLength--) {
+		nTemp = *nData++ ^ wCRCWord;
+		wCRCWord >>= 8;
+		wCRCWord ^= wCRCTable[nTemp];
+	}
+
+	return wCRCWord;
+}
+
+unsigned char *make_request(unsigned char dev_addr, unsigned short reg_addr,
+		unsigned short reg_data, unsigned char type) {
+	int cont;
+	unsigned char *ret;
+
+	if (reg_data == 0)
+		reg_data = 1;
 
 	s_un_req_type pre_request;
 
 	pre_request.structure.addr = dev_addr;
 	pre_request.structure.cmd = type;
-	pre_request.structure.from = troca(from);
-	pre_request.structure.to = troca(to);
+	pre_request.structure.from = troca(reg_addr);
+	pre_request.structure.to = troca(reg_data);
 
 	static req_un_type request;
 
 	request.structure.addr = dev_addr;
 	request.structure.cmd = type;
-	request.structure.from = troca(from);
-	request.structure.to = troca(to);
+	request.structure.from = troca(reg_addr);
+	request.structure.to = troca(reg_data);
 	request.structure.crc = CRC16(pre_request.string, 6);
 
-	return request.string;
+	ret = (unsigned char *) malloc(sizeof(request_size));
+	for (cont = 0; cont < request_size; ++cont)
+		ret[cont] = request.string[cont];
+
+	return ret;
 }
 
-const unsigned char *make_read_request(unsigned char dev_addr,
-		unsigned short from, unsigned short to) {
-	return make_request(dev_addr, from, to, read_holding_registers);
+unsigned char *make_read_request(unsigned char dev_addr, unsigned short from,
+		unsigned short nr) {
+	return make_request(dev_addr, from, nr, read_holding_registers);
 }
 
-const unsigned char *make_write_request(unsigned char dev_addr,
+unsigned char *make_write_request(unsigned char dev_addr,
 		unsigned short reg_addr, unsigned short reg_value) {
 	return make_request(dev_addr, reg_addr, reg_value, write_single_register);
 }
 
-unsigned char send_request(unsigned char *output) {
-	unsigned char i;
+int get_device(int fd, unsigned char dev_addr, unsigned short reg_addr,
+		unsigned short reg_data, unsigned char *device_memorie) {
+	unsigned char *request, *response;
+	int n, cont, ret;
 
-	for (i = 0; i < request_size; ++i, ++output)
-		putc(*output, stdout);
+	request = make_read_request(dev_addr, reg_addr, reg_data);
+	response = (unsigned char *) malloc(sizeof(buffer_s));
 
-	return 0;
+	n = make_transaction(fd, request, response, request_size, buffer_s);
+
+	if (n == -1)
+		return -1;
+
+	ret = response[2];
+
+	for (cont = 0; cont < ret; ++cont)
+		device_memorie[cont] = response[cont + 3];
+
+//	free(request);
+//	free(response);
+
+	return ret;
 }
 
-unsigned char *fromFloat(float in) {
-	static req_un_float emFloat;
+unsigned char *fromFloat(float value) {
+	unsigned char *ret;
 
-	emFloat.mantissa = in;
+	ret = (unsigned char *) malloc(4);
+	un.a = value;
 
-	return emFloat.vetor;
+	ret[1] = un.b[0];
+	ret[0] = un.b[1];
+	ret[3] = un.b[2];
+	ret[2] = un.b[3];
+
+	return ret;
 }
 
-float toFloat(unsigned char *in) {
-	static req_un_float emFloat;
-	int cont;
+float toFloat(unsigned char *reg) {
 
-	for (cont = 0; cont < 4; ++cont)
-		emFloat.vetor[cont] = in[cont];
+	un.b[0] = reg[1];
+	un.b[1] = reg[0];
+	un.b[2] = reg[3];
+	un.b[3] = reg[2];
 
-	return emFloat.mantissa;
+	return un.a;
 }
