@@ -10,29 +10,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct simple_req_str {
-	unsigned char addr;
-	unsigned char cmd;
-	unsigned short from;
-	unsigned short to;
-} s_req_type;
-
-typedef union simple_req_un {
-	s_req_type structure;
-	unsigned char string[sizeof(s_req_type)];
-} s_un_req_type;
-
-typedef struct req_str {
+struct req_str {
 	unsigned char addr;
 	unsigned char cmd;
 	unsigned short from;
 	unsigned short to;
 	unsigned short crc;
-} req_type;
+};
 
 typedef union req_un {
-	req_type structure;
-	unsigned char string[sizeof(req_type)];
+	struct req_str structure;
+	unsigned char string[sizeof(struct req_str)];
 } req_un_type;
 
 union {
@@ -108,25 +96,18 @@ unsigned short CRC16(unsigned char *nData, unsigned short wLength) {
 unsigned char *make_request(unsigned char dev_addr, unsigned short reg_addr,
 		unsigned short reg_data, unsigned char type) {
 	int cont;
-	unsigned char *ret;
-
-	if (reg_data == 0)
-		reg_data = 1;
-
-	s_un_req_type pre_request;
-
-	pre_request.structure.addr = dev_addr;
-	pre_request.structure.cmd = type;
-	pre_request.structure.from = troca(reg_addr);
-	pre_request.structure.to = troca(reg_data);
-
-	static req_un_type request;
+	unsigned char *ret, aux[6];
+	req_un_type request;
 
 	request.structure.addr = dev_addr;
 	request.structure.cmd = type;
 	request.structure.from = troca(reg_addr);
 	request.structure.to = troca(reg_data);
-	request.structure.crc = CRC16(pre_request.string, 6);
+
+	for (cont = 0; cont < 6; ++cont)
+		aux[cont] = request.string[cont];
+
+	request.structure.crc = CRC16(aux, 6);
 
 	ret = (unsigned char *) malloc(sizeof(request_size));
 	for (cont = 0; cont < request_size; ++cont)
